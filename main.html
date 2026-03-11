@@ -1,0 +1,1717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cinevo - Premium Streaming</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+    <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.84/build/spline-viewer.js"></script>
+    <style>
+        /* Custom Styles */
+        :root {
+  --primary: #3498db; /* Bright navy blue */
+  --secondary: #00adef;
+  --dark: #0a0e17;
+  --glow: 0 0 10px rgba(52, 152, 219, 0.7); /* Brighter navy blue glow */
+  --text-color: #ecf0f1;
+  --bg-color: #2c3e50;
+  --card-bg: #34495e;
+}
+
+@font-face {
+  font-family: 'Netflix Sans';
+  src: url('https://assets.nflxext.com/ffe/siteui/fonts/netflix-sans/v3/NetflixSans_W_Md.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* ================
+    Global Styles
+    ================ */
+* {
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Netflix Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  background-color:black;
+  color: var(--text-color);
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  margin: 0;
+}
+
+/* ========================
+    Scroll Animation Utility
+    ======================== */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.scroll-reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* =====================
+    Header / Logo Styles
+    ===================== */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primary);
+  text-decoration: none;
+  text-shadow: var(--glow);
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.05);
+  text-shadow: 0 0 15px rgba(52, 152, 219, 0.9);
+}
+
+.logo-img {
+  width: 40px;
+  height: 40px;
+  transition: transform 0.3s ease;
+  filter: drop-shadow(var(--glow));
+}
+
+.logo:hover .logo-img {
+  transform: rotate(15deg);
+}
+
+/* ======================
+    Hero Slider Styles
+    ====================== */
+.hero-slider {
+  position: relative;
+  height: 80vh;
+  width: 100%;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(52, 152, 219, 0.4);
+}
+
+.slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0;
+  transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+}
+
+.slide.active {
+  opacity: 1;
+  transform: translateX(0);
+  z-index: 3;
+}
+
+.slide.next {
+  transform: translateX(100%);
+  opacity: 0;
+  z-index: 2;
+}
+
+.slide.prev {
+  transform: translateX(-100%);
+  opacity: 0;
+  z-index: 1;
+}
+
+.slide-content {
+  position: absolute;
+  bottom: 15%;
+  left: 5%;
+  max-width: 600px;
+  padding: 2rem;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.4));
+  border-radius: 10px;
+  border-left: 3px solid var(--primary);
+  transform: translateY(20px);
+  opacity: 0;
+  box-shadow: var(--glow);
+  transition: all 0.8s ease 0.3s;
+}
+
+.slide.active .slide-content {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.slider-controls {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  gap: 10px;
+}
+
+.slider-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.slider-dot.active {
+  background: var(--primary);
+  transform: scale(1.2);
+  box-shadow: var(--glow);
+}
+
+/* ====================
+    Genre Panel Section
+    ==================== */
+.panel-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  padding: 3rem 2rem;
+}
+
+.panel {
+  height: 180px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  border: 1px solid rgba(52, 152, 219, 0.4);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  transition: background 0.3s ease;
+}
+
+.panel:hover {
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 12px 25px rgba(52, 152, 219, 0.5);
+}
+
+.panel:hover::before {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.panel span {
+  position: relative;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 0.8rem 1.5rem;
+  border-radius: 30px;
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--secondary);
+  text-shadow: 0 0 5px rgba(0, 173, 239, 0.7);
+  transition: all 0.3s ease;
+}
+
+.panel:hover span {
+  background: rgba(0, 0, 0, 0.9);
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(0, 173, 239, 0.7);
+}
+
+/* ========================
+    Mood-Based Recommendation
+    ======================== */
+.intro {
+  text-align: center;
+  margin: 5rem 0 3rem;
+  padding: 0 20px;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInUp 1s ease forwards 0.5s;
+}
+
+.intro h1 {
+  font-size: 3rem;
+  background: linear-gradient(to right, #aed6f1, #3498db);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 0 20px rgba(173, 214, 241, 0.5);
+}
+
+.typing {
+  font-size: 1.3rem;
+  color: #aed6f1;
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 2px solid var(--text-color);
+  width: 0;
+  margin: 0 auto;
+  max-width: 600px;
+  animation: typing 4s steps(60, end) forwards, blink 0.8s step-end infinite;
+}
+
+.spark {
+  text-shadow: 0 0 10px #fefefe, 0 0 20px #85c1e9, 0 0 30px #3498db;
+}
+
+.mood-input-container {
+  margin: 3rem auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  max-width: 600px;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInUp 1s ease forwards 1s;
+}
+
+.mood-input-container input,
+.mood-input-container button {
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  border: none;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.mood-input-container input {
+  background: rgba(255, 255, 255, 0.9);
+  color: #000;
+  width: 100%;
+  text-align: center;
+  border: 2px solid transparent;
+}
+
+.mood-input-container input:focus {
+  border-color: var(--secondary);
+  box-shadow: 0 0 0 3px rgba(0, 173, 239, 0.4);
+}
+
+.mood-input-container button {
+  background: linear-gradient(to right, #85c1e9, #3498db);
+  color: var(--text-color);
+  font-weight: bold;
+  cursor: pointer;
+  min-width: 200px;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--glow);
+}
+
+.mood-input-container button:hover {
+  background: linear-gradient(to right, #aed6f1, #5dade2);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 10px 20px rgba(52, 152, 219, 0.6);
+}
+
+.mood-display {
+  font-size: 1.5rem;
+  text-align: center;
+  margin: 1rem auto;
+  min-height: 2rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.5s ease;
+  color: var(--secondary);
+}
+
+.movie-recommendations {
+  margin: 3rem auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  padding: 0 20px;
+  max-width: 1200px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease;
+}
+
+.movie-card {
+  width: 180px;
+  height: 250px;
+  border: 2px solid var(--primary);
+  border-radius: 15px;
+  background-color: var(--card-bg);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: var(--glow);
+}
+
+.movie-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(52, 152, 219, 0.2), rgba(103, 192, 241, 0.2));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.movie-card:hover {
+  transform: translateY(-10px) scale(1.05);
+  border-color: var(--secondary);
+  box-shadow: 0 15px 30px rgba(52, 152, 219, 0.6);
+}
+
+.movie-card:hover::before {
+  opacity: 1;
+}
+
+.movie-card .emoji {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  text-shadow: 0 0 10px rgba(0, 173, 239, 0.8);
+  transition: transform 0.3s ease;
+}
+
+.movie-card:hover .emoji {
+  transform: scale(1.2);
+}
+
+.movie-card .title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-align: center;
+  padding: 0 1rem;
+  margin-top: 0.5rem;
+}
+
+/* ===============
+    AI Movie Buddy
+    =============== */
+.ai-section {
+  position: relative;
+  padding: 6rem 2rem;
+  overflow: hidden;
+  background: linear-gradient(to right, #1a2533, #000000);
+  border-top: 1px solid rgba(52, 152, 219, 0.4);
+  border-bottom: 1px solid rgba(52, 152, 219, 0.4);
+}
+
+.ai-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5));
+  z-index: 1;
+}
+
+.robot-3d {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 40%;
+  height: 100%;
+  z-index: 2;
+  opacity: 0;
+  transform: translateX(-50px);
+  animation: fadeInRight 1s ease forwards 1s;
+  filter: drop-shadow(var(--glow));
+}
+
+.ai-content {
+  position: relative;
+  z-index: 3;
+  margin-left: auto;
+  width: 55%;
+  padding-left: 2rem;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInUp 1s ease forwards 1s;
+}
+
+.ai-tag {
+  display: inline-block;
+  background: linear-gradient(to right, #64b5f6, #1e88e5);
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 15px rgba(30, 136, 229, 0.4);
+}
+
+/* ======================
+    Footer & Social Icons
+    ====================== */
+footer {
+  background: linear-gradient(135deg, var(--dark) 0%, #000000 100%);
+  padding: 4rem 0 0;
+  border-top: 1px solid rgba(0, 173, 239, 0.2);
+}
+
+.footer-logo-text {
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(to right, var(--secondary), #0078d4);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 10px rgba(0, 173, 239, 0.5);
+}
+
+.social-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(0, 173, 239, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  color: var(--text-color);
+}
+
+.social-icon:hover {
+  transform: translateY(-5px);
+  background: linear-gradient(135deg, var(--secondary) 0%, #0078d4 100%);
+  color: #fff;
+  box-shadow: 0 10px 20px rgba(0, 173, 239, 0.3);
+}
+
+/* ==============
+    Animations
+    ============== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+@keyframes typing {
+  from {
+    width: 0;
+  }
+
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes blink {
+  50% {
+    border-color: transparent;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* =====================
+    Responsive Design
+    ===================== */
+@media (max-width: 1024px) {
+  .robot-3d {
+    width: 50%;
+  }
+
+  .ai-content {
+    width: 45%;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-slider {
+    height: 70vh;
+  }
+
+  .slide-content {
+    bottom: 10%;
+    left: 2%;
+    max-width: 90%;
+    padding: 1.5rem;
+  }
+
+  .panel-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .robot-3d {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    margin-bottom: 2rem;
+  }
+
+  .ai-content {
+    width: 100%;
+    margin-left: 0;
+    padding-left: 0;
+    text-align: center;
+  }
+
+  .intro h1 {
+    font-size: 2.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-slider {
+    height: 60vh;
+  }
+
+  .slide-content h1 {
+    font-size: 2rem;
+  }
+
+  .panel-container {
+    grid-template-columns: 1fr;
+  }
+
+  .movie-card {
+    width: 140px;
+    height: 200px;
+  }
+
+  .mood-input-container {
+    width: 90%;
+  }
+
+  .mood-input-container button {
+    min-width: 150px;
+  }
+}
+
+
+
+    </style>
+    <header class="flex justify-between items-center p-4 z-50 relative">
+        <a href="#" class="logo">
+            <img src="/image/logo1.jpg" alt="Cinevo" class="logo-img">
+            <span class="logo-text">Cinevo</span>
+        
+        
+        </a>
+  
+
+        
+        <nav class="hidden md:block">
+            <ul class="flex space-x-6">
+                <li><a href="#" class="hover:text-gray-300 transition-colors">Home</a></li>
+                <li><a href="movie.html" class="hover:text-gray-300 transition-colors">Movies</a></li>
+                <li><a href="tv.html" class="hover:text-gray-300 transition-colors">TV Shows</a></li>
+                <li><a href="kids.html" class="hover:text-gray-300 transition-colors">Kids</a></li>
+                <li><a href="#" class="hover:text-gray-300 transition-colors">My List</a></li>
+            </ul>
+        </nav>
+        
+        <div class="flex items-center space-x-4">
+            <i class="fas fa-search search-icon cursor-pointer hover:text-gray-300 transition-colors"></i>
+            <div class="dot-menu cursor-pointer" id="dotMenu">
+                <div
+                class="w-2 h-2 bg-white rounded-full mb-1 transition-all"><a href="threedots.html"></div></a>
+                <div class="w-2 h-2 bg-white rounded-full mb-1 transition-all"></div>
+                <div class="w-2 h-2 bg-white rounded-full transition-all"></div>
+            </div>
+        </div>
+        
+        <!-- Auth Dropdown -->
+        <div class="auth-dropdown hidden absolute right-4 top-16 bg-gray-900 p-4 rounded-lg shadow-xl w-64 z-50 transition-all duration-300" id="authDropdown">
+            <h3 class="text-xl font-bold mb-4">Sign In</h3>
+            
+            <form class="sign-in-form" id="signInForm">
+                <input type="email" placeholder="Email" class="w-full p-2 mb-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-red-500 transition-all" required>
+                <input type="password" placeholder="Password" class="w-full p-2 mb-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-red-500 transition-all" required>
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 py-2 rounded font-bold transition-colors">Sign In</button>
+                <p class="text-sm mt-3 text-center cursor-pointer text-gray-400 hover:text-white transition-colors" id="showSignUp">New to Cinevo? Sign up now</p>
+            </form>
+            
+            <form class="sign-up-form hidden" id="signUpForm">
+                <input type="text" placeholder="Username" class="w-full p-2 mb-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-red-500 transition-all" required>
+                <input type="email" placeholder="Email" class="w-full p-2 mb-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-red-500 transition-all" required>
+                <input type="password" placeholder="Password" class="w-full p-2 mb-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-red-500 transition-all" required>
+                <input type="password" placeholder="Confirm Password" class="w-full p-2 mb-3 bg-gray-800 rounded focus:outline-none focus:ring-2 focus:ring-red-500 transition-all" required>
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 py-2 rounded font-bold transition-colors">Sign Up</button>
+                <p class="text-sm mt-3 text-center cursor-pointer text-gray-400 hover:text-white transition-colors" id="showSignIn">Already have an account? Sign in</p>
+            </form>
+        </div>
+    </header>
+
+    <!-- Hero Slider -->
+    <div class="hero-slider">
+        <!-- Slide 1 -->
+        <div class="slide active" style="background-image: url('https://image.tmdb.org/t/p/original/9dKCd55IuTT5QRs989m9Qlb7d2B.jpg')">
+            <div class="slide-content">
+                <div class="flex items-center space-x-4 mb-2">
+                    <span class="flex items-center"><i class="fas fa-star text-yellow-400 mr-1"></i> 8.7</span>
+                    <span>2022</span>
+                    <span>2h 30m</span>
+                </div>
+                <h1 class="text-4xl font-bold mb-3">Stranger Things Season 4</h1>
+                <p class="mb-4">When a young boy vanishes, a small town uncovers a mystery involving secret experiments, terrifying supernatural forces, and one strange little girl.</p>
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <span class="px-3 py-1 bg-gray-800 rounded-full text-sm">Sci-Fi</span>
+                    <span class="px-3 py-1 bg-gray-800 rounded-full text-sm">Horror</span>
+                    <span class="px-3 py-1 bg-gray-800 rounded-full text-sm">Drama</span>
+                </div>
+                <div class="flex space-x-3">
+                    <a href="#" class="bg-white text-black px-6 py-2 rounded font-bold hover:bg-opacity-80 transition-all"><i class="fas fa-play mr-2"></i> Play Now</a>
+                    <a href="#" class="bg-gray-600 bg-opacity-70 px-6 py-2 rounded font-bold hover:bg-opacity-50 transition-all"><i class="fas fa-info-circle mr-2"></i> More Info</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="slide next" style="background-image: url('https://image.tmdb.org/t/p/original/8Vt6mWEReuy4Of61Lnj5Xj704m8.jpg')">
+            <div class="slide-content">
+                <div class="flex items-center space-x-4 mb-2">
+                    <span class="flex items-center"><i class="fas fa-star text-yellow-400 mr-1"></i> 8.2</span>
+                    <span>2023</span>
+                    <span>2h 15m</span>
+                </div>
+                <h1 class="text-4xl font-bold mb-3">Loki: Season 2</h1>
+                <p class="mb-4">The mercurial villain Loki resumes his role as the God of Mischief in a new series that takes place after the events of "Avengers: Endgame."</p>
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <span class="px-3 py-1 bg-gray-800 rounded-full text-sm">Action</span>
+                    <span class="px-3 py-1 bg-gray-800 rounded-full text-sm">Adventure</span>
+                    <span class="px-3 py-1 bg-gray-800 rounded-full text-sm">Sci-Fi</span>
+                </div>
+                <div class="flex space-x-3">
+                    <a href="#" class="bg-white text-black px-6 py-2 rounded font-bold hover:bg-opacity-80 transition-all"><i class="fas fa-play mr-2"></i> Play Now</a>
+                    <a href="#" class="bg-gray-600 bg-opacity-70 px-6 py-2 rounded font-bold hover:bg-opacity-50 transition-all"><i class="fas fa-info-circle mr-2"></i> More Info</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="slide" style="background-image: url('https://image.tmdb.org/t/p/original/9PFonBhy4cQy7KzqswFfQn4SHJd.jpg')">
+            <div class="slide-content">
+                <div class="flex items-center space-x-4 mb-2">
+                    <span class="flex items-center"><i class="fas fa-star text-yellow-400 mr-1"></i> 8.8</span>
+                    <span>2023</span>
+                    <span>2h 45m</span>
+                </div>
+                <h1 class="text-4xl font-bold mb-3">The Mandalorian Season 3</h1>
+                <p class="mb-4">After the fall of the Galactic Empire, a lone gunfighter makes his way through the lawless outer reaches of the galaxy.</p>
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <span class="px-3 py-1 bg-gray-800 rounded-full text-sm">Sci-Fi</span>
+                    <span class="px-3 py-1 bg-gray-800 rounded-full text-sm">Western</span>
+                    <span class="px-3 py-1 bg-gray-800 rounded-full text-sm">Action</span>
+                </div>
+                <div class="flex space-x-3">
+                    <a href="#" class="bg-white text-black px-6 py-2 rounded font-bold hover:bg-opacity-80 transition-all"><i class="fas fa-play mr-2"></i> Play Now</a>
+                    <a href="#" class="bg-gray-600 bg-opacity-70 px-6 py-2 rounded font-bold hover:bg-opacity-50 transition-all"><i class="fas fa-info-circle mr-2"></i> More Info</a>
+                </div>
+            </div>
+        </div>
+        <!-- Slide 4 -->
+        <div class="slide" style="background-image: url('https://image.tmdb.org/t/p/original/wRbjVBdDo5qHAEOVYoMWpM58FSA.jpg')">
+            <div class="slide-content">
+                <div class="slide-meta">
+                    <span class="slide-rating"><i class="fas fa-star"></i> 9.5</span>
+                    <span class="slide-year">2013</span>
+                    <span class="slide-duration">3h 15m</span>
+                </div>
+                <h1>Breaking Bad: The Final Season</h1>
+                <p>A high school chemistry teacher diagnosed with inoperable lung cancer turns to manufacturing and selling methamphetamine to secure his family's future.</p>
+                <div class="slide-genres">
+                    <span class="genre">Drama</span>
+                    <span class="genre">Crime</span>
+                    <span class="genre">Thriller</span>
+                </div>
+                <div class="slide-buttons">
+                    <a href="#" class="btn btn-primary"><i class="fas fa-play"></i> Play Now</a>
+                    <a href="#" class="btn btn-secondary"><i class="fas fa-info-circle"></i> More Info</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5 -->
+        <div class="slide" style="background-image: url('https://image.tmdb.org/t/p/original/1X7vow16X7CnCoexXh4H4F2yDJv.jpg')">
+            <div class="slide-content">
+                <div class="slide-meta">
+                    <span class="slide-rating"><i class="fas fa-star"></i> 8.3</span>
+                    <span class="slide-year">2023</span>
+                    <span class="slide-duration">1h 42m</span>
+                </div>
+                <h1>M3GAN</h1>
+                <p>A brilliant roboticist at a toy company builds a life-like doll that begins to take on a life of its own.</p>
+                <div class="slide-genres">
+                    <span class="genre">Horror</span>
+                    <span class="genre">Sci-Fi</span>
+                    <span class="genre">Thriller</span>
+                </div>
+                <div class="slide-buttons">
+                    <a href="#" class="btn btn-primary"><i class="fas fa-play"></i> Play Now</a>
+                    <a href="#" class="btn btn-secondary"><i class="fas fa-info-circle"></i> More Info</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slider Controls -->
+        <div class="slider-controls">
+            <div class="slider-dots" id="sliderDots">
+                <!-- Dots will be added by JavaScript -->
+            </div>
+        </div>
+        
+        <!-- Slider Progress Bar -->
+        <div class="slider-progress">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </div>
+
+    <!-- Genre Panels -->
+    <div class="panel-container">
+        <a href="action.html" class="panel" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://image.tmdb.org/t/p/original/8Y43POKjjKDGI9MH89NW0NAzzp8.jpg')">
+            <span>Action</span>
+        </a>
+        <a href="drama.html" class="panel" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://st4.depositphotos.com/1008011/25381/i/450/depositphotos_253811704-stock-photo-theater-play-theme-blur-background.jpg')">
+            <span>Drama</span>
+        </a>
+        <a href="comedy.html" class="panel" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://image.tmdb.org/t/p/original/8kOWDBK6XlPUzckuHDo3wwVRFwt.jpg')">
+            <span>Comedy</span>
+        </a>
+        <a href="thriller.html" class="panel" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://image.tmdb.org/t/p/original/5mzr6JZbrqnqD8rCEvPhuCE5Fw2.jpg')">
+            <span>Thriller</span>
+        </a>
+        <a href="romance.html" class="panel" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTbL9SiVyTSFd8i4CMe_tblyAFWgpYKPsUUIg&s')">
+            <span>Romance</span>
+        </a>
+    </div>
+    
+    <!-- Movie Mood Section -->
+    <div class="intro">
+        <h1 class="spark">MovieMood</h1>
+        <div class="typing" id="typingText">
+          Type your mood or genre — like 'comedy', 'sad', 'romantic', and get movie magic!
+        </div>
+    </div>
+    
+    <div class="mood-input-container">
+        <input type="text" id="moodInput" placeholder="Enter your mood..." />
+        <button onclick="recommendMovies()">Recommend Movies</button>
+    </div>
+    
+    <div class="mood-display" id="moodDisplay"></div>
+    
+    <div class="movie-recommendations" id="movieRecommendations"></div>
+
+    <!-- AI Movie Buddy Section -->
+    <div class="ai-section">
+        <div class="ai-gradient"></div>
+        
+        <!-- 3D Robot -->
+        <div class="robot-3d">
+            <spline-viewer url="https://prod.spline.design/2p2LTUkxwvRWFIhZ/scene.splinecode"></spline-viewer>
+        </div>
+        
+        <!-- Content -->
+        <div class="ai-content">
+            <div class="ai-tag">
+                Meet the Crew 🎥
+            </div>
+            <h1 class="text-5xl font-bold mb-6">CineMate<br>Your AI Movie Buddy Squad</h1>
+            <p class="text-xl text-gray-300 mb-8">
+                Say hello to your new movie-loving crew! At CineMate, you're not just scrolling alone — you're joined by a funky team of AI characters who know your taste and serve up the best picks. Whether you're into action-packed blockbusters, emotional dramas, or wacky animations, our AI buddies have the perfect rec for every mood.
+            </p>
+            <a href="threedots.html" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg inline-block transition-colors">
+                Start Watching
+            </a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="max-w-7xl mx-auto px-4 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Logo and Description -->
+                <div>
+                    <div class="flex items-center mb-4">
+                        <img src="https://via.placeholder.com/50x50/00adef/ffffff?text=CV" alt="Cinevo" class="mr-3">
+                        <span class="footer-logo-text">Cinevo</span>
+                    </div>
+                    <p class="text-gray-400 mb-6">
+                        The ultimate destination for premium streaming. Watch the latest movies, TV shows, and exclusive content in stunning 4K quality.
+                    </p>
+                    <div>
+                        <h3 class="text-lg font-bold mb-4 relative inline-block">
+                            Follow Us
+                            <span class="absolute bottom-0 left-0 w-1/2 h-1 bg-gradient-to-r from-blue-400 to-blue-600"></span>
+                        </h3>
+                        <div class="flex space-x-4">
+                            <a href="#" class="social-icon">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="#" class="social-icon">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="social-icon">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="#" class="social-icon">
+                                <i class="fab fa-youtube"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-lg font-bold mb-4 relative inline-block">
+                        Quick Links
+                        <span class="absolute bottom-0 left-0 w-1/2 h-1 bg-gradient-to-r from-blue-400 to-blue-600"></span>
+                    </h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white flex items-center transition-colors"><i class="fas fa-chevron-right text-xs mr-2 text-blue-400"></i> Home</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white flex items-center transition-colors"><i class="fas fa-chevron-right text-xs mr-2 text-blue-400"></i> Movies</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white flex items-center transition-colors"><i class="fas fa-chevron-right text-xs mr-2 text-blue-400"></i> TV Shows</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white flex items-center transition-colors"><i class="fas fa-chevron-right text-xs mr-2 text-blue-400"></i> New Releases</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white flex items-center transition-colors"><i class="fas fa-chevron-right text-xs mr-2 text-blue-400"></i> Trending</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Categories -->
+                <div>
+                    <h3 class="text-lg font-bold mb-4 relative inline-block">
+                        Categories
+                        <span class="absolute bottom-0 left-0 w-1/2 h-1 bg-gradient-to-r from-blue-400 to-blue-600"></span>
+                    </h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white flex items-center transition-colors"><i class="fas fa-chevron-right text-xs mr-2 text-blue-400"></i> Action</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white flex items-center transition-colors"><i class="fas fa-chevron-right text-xs mr-2 text-blue-400"></i> Comedy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white flex items-center transition-colors"><i class="fas fa-chevron-right text-xs mr-2 text-blue-400"></i> Drama</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white flex items-center transition-colors"><i class="fas fa-chevron-right text-xs mr-2 text-blue-400"></i> Sci-Fi</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white flex items-center transition-colors"><i class="fas fa-chevron-right text-xs mr-2 text-blue-400"></i> Horror</a></li>
+                    </ul>
+                </div>
+        <!-- Auth Dropdown -->
+        <div class="auth-dropdown hidden absolute right-4 top-16 bg-gray-900 p-4 rounded-lg shadow-xl w-64" id="authDropdown">
+            <h3 class="text-xl font-bold mb-4">Sign In</h3>
+            
+            <form class="sign-in-form" id="signInForm">
+                <input type="email" placeholder="Email" class="w-full p-2 mb-3 bg-gray-800 rounded" required>
+                <input type="password" placeholder="Password" class="w-full p-2 mb-3 bg-gray-800 rounded" required>
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 py-2 rounded font-bold">Sign In</button>
+                <p class="text-sm mt-3 text-center cursor-pointer text-gray-400 hover:text-white" id="showSignUp">New to Cinevo? Sign up now</p>
+            </form>
+        </div>
+    </header>
+                
+                <!-- Newsletter -->
+                <div>
+                    <h3 class="text-lg font-bold mb-4 relative inline-block">
+                        Newsletter
+                        <span class="absolute bottom-0 left-0 w-1/2 h-1 bg-gradient-to-r from-blue-400 to-blue-600"></span>
+                    </h3>
+                    <p class="text-gray-400 mb-4">
+                        Subscribe to get updates on new releases, exclusive content and special offers.
+                    </p>
+                    <form class="mb-6">
+                        <div class="relative">
+                            <input type="email" placeholder="Your email address" class="w-full py-3 px-4 bg-gray-800 rounded-full text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <button type="submit" class="absolute right-1 top-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white py-2 px-4 rounded-full font-bold hover:opacity-90">
+                                Subscribe
+                            </button>
+                        </div>
+                    </form>
+                    <div>
+                        <h4 class="text-sm font-bold mb-2 text-gray-300">Payment Methods</h4>
+                        <div class="flex space-x-2">
+                            <div class="w-12 h-8 bg-gray-800 rounded flex items-center justify-center text-gray-400">
+                                <i class="fab fa-cc-visa"></i>
+                            </div>
+                            <div class="w-12 h-8 bg-gray-800 rounded flex items-center justify-center text-gray-400">
+                                <i class="fab fa-cc-mastercard"></i>
+                            </div>
+                            <div class="w-12 h-8 bg-gray-800 rounded flex items-center justify-center text-gray-400">
+                                <i class="fab fa-cc-amex"></i>
+                            </div>
+                            <div class="w-12 h-8 bg-gray-800 rounded flex items-center justify-center text-gray-400">
+                                <i class="fab fa-cc-paypal"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer Bottom -->
+            <div class="border-t border-gray-800 mt-12 pt-8">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <p class="text-gray-400 text-sm mb-4 md:mb-0">
+                        &copy; 2023 Cinevo. All Rights Reserved.
+                    </p>
+                    <div class="flex space-x-6">
+                        <a href="#" class="text-gray-400 hover:text-white text-sm">Privacy Policy</a>
+                        <a href="#" class="text-gray-400 hover:text-white text-sm">Terms of Service</a>
+                        <a href="#" class="text-gray-400 hover:text-white text-sm">Cookie Policy</a>
+                        <a href="#" class="text-gray-400 hover:text-white text-sm">Contact Us</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script>
+
+    <!-- Scripts -->
+   document.addEventListener('DOMContentLoaded', function() {
+    // Slider functionality
+    const slides = document.querySelectorAll('.slide');
+    const dotsContainer = document.getElementById('sliderDots');
+    const progressBar = document.getElementById('progressBar');
+    let currentSlide = 0;
+    let nextSlideIndex = 1;
+    let slideInterval;
+    let isAnimating = false;
+    const slideDuration = 3000; // 3 seconds per slide
+    const animationDuration = 600; // transition animation duration in ms
+    
+    // Create dots
+    slides.forEach((slide, index) => {
+        const dot = document.createElement('div');
+        dot.classList.add('slider-dot');
+        dot.dataset.slide = index;
+        dotsContainer.appendChild(dot);
+        
+        dot.addEventListener('click', () => {
+            if (!isAnimating) {
+                goToSlide(index);
+                resetTimer();
+            }
+        });
+    });
+    
+    const dots = document.querySelectorAll('.slider-dot');
+    
+    // Initialize first dot as active
+    dots[0].classList.add('active');
+    
+    // Set initial slide positions
+    slides.forEach((slide, index) => {
+        if (index === 0) {
+            slide.classList.add('active');
+            slide.classList.remove('next', 'prev');
+            slide.style.transform = 'translateX(0)';
+            slide.style.opacity = '1';
+            slide.style.zIndex = '2';
+        } else if (index === 1) {
+            slide.classList.add('next');
+            slide.classList.remove('active', 'prev');
+            slide.style.transform = 'translateX(100%)';
+            slide.style.opacity = '0.7';
+            slide.style.zIndex = '1';
+        } else {
+            slide.classList.remove('active', 'next', 'prev');
+            slide.style.transform = 'translateX(100%)';
+            slide.style.opacity = '0';
+            slide.style.zIndex = '0';
+        }
+    });
+    
+    // Apply transition style to all slides
+    slides.forEach(slide => {
+    slide.style.transition = `transform ${animationDuration}ms ease-in-out, opacity ${animationDuration}ms ease-in-out`;
+});
+
+    
+    // Auto-rotate slides
+    function startSlider() {
+        slideInterval = setInterval(() => {
+            nextSlide();
+        }, slideDuration);
+    }
+    
+    function nextSlide() {
+        if (isAnimating) return;
+        isAnimating = true;
+        
+        // Get current and next slide indices
+        const prevSlideIndex = currentSlide;
+        currentSlide = (currentSlide + 1) % slides.length;
+        nextSlideIndex = (currentSlide + 1) % slides.length;
+        
+        // Current slide moves left
+        slides[prevSlideIndex].style.transform = 'translateX(-100%)';
+        slides[prevSlideIndex].style.opacity = '0.7';
+        slides[prevSlideIndex].style.zIndex = '1';
+        slides[prevSlideIndex].classList.add('prev');
+        slides[prevSlideIndex].classList.remove('active', 'next');
+        
+        // Next slide becomes active
+        slides[currentSlide].style.transform = 'translateX(0)';
+        slides[currentSlide].style.opacity = '1';
+        slides[currentSlide].style.zIndex = '2';
+        slides[currentSlide].classList.add('active');
+        slides[currentSlide].classList.remove('next', 'prev');
+        
+        // Prepare the upcoming next slide
+        slides[nextSlideIndex].style.transform = 'translateX(100%)';
+        slides[nextSlideIndex].style.opacity = '0.7';
+        slides[nextSlideIndex].style.zIndex = '1';
+        slides[nextSlideIndex].classList.add('next');
+        slides[nextSlideIndex].classList.remove('active', 'prev');
+        
+        // Other slides
+        slides.forEach((slide, index) => {
+            if (index !== prevSlideIndex && index !== currentSlide && index !== nextSlideIndex) {
+                slide.classList.remove('active', 'next', 'prev');
+                slide.style.transform = 'translateX(100%)';
+                slide.style.opacity = '0';
+                slide.style.zIndex = '0';
+            }
+        });
+        
+        // Update dots
+        updateDots();
+        
+        // Reset progress bar
+        resetProgressBar();
+        
+        // Reset animation flag after transition completes
+        setTimeout(() => {
+            isAnimating = false;
+        }, animationDuration);
+    }
+    console.log('Current slide index:', currentSlide);
+if (isAnimating) {
+    console.log('Animation is currently in progress.');
+}
+    function prevSlide() {
+        if (isAnimating) return;
+        isAnimating = true;
+        
+        // Get current and previous slide indices
+        const nextSlideIndex = currentSlide;
+        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+        const prevSlideIndex = (currentSlide - 1 + slides.length) % slides.length;
+        
+        // Current slide moves right
+        slides[nextSlideIndex].style.transform = 'translateX(100%)';
+        slides[nextSlideIndex].style.opacity = '0.7';
+        slides[nextSlideIndex].style.zIndex = '1';
+        slides[nextSlideIndex].classList.add('next');
+        slides[nextSlideIndex].classList.remove('active', 'prev');
+        
+        // Previous slide becomes active
+        slides[currentSlide].style.transform = 'translateX(0)';
+        slides[currentSlide].style.opacity = '1';
+        slides[currentSlide].style.zIndex = '2';
+        slides[currentSlide].classList.add('active');
+        slides[currentSlide].classList.remove('next', 'prev');
+        
+        // Prepare the new prev slide
+        if (prevSlideIndex !== nextSlideIndex) {
+            slides[prevSlideIndex].style.transform = 'translateX(-100%)';
+            slides[prevSlideIndex].style.opacity = '0.7';
+            slides[prevSlideIndex].style.zIndex = '1';
+            slides[prevSlideIndex].classList.add('prev');
+            slides[prevSlideIndex].classList.remove('active', 'next');
+        }
+        
+        // Other slides
+        slides.forEach((slide, index) => {
+            if (index !== prevSlideIndex && index !== currentSlide && index !== nextSlideIndex) {
+                slide.classList.remove('active', 'next', 'prev');
+                slide.style.transform = 'translateX(-100%)';
+                slide.style.opacity = '0';
+                slide.style.zIndex = '0';
+            }
+        });
+        
+        // Update dots
+        updateDots();
+        
+        // Reset progress bar
+        resetProgressBar();
+        
+        // Reset animation flag after transition completes
+        setTimeout(() => {
+            isAnimating = false;
+        }, animationDuration);
+    }
+    
+    function goToSlide(index) {
+        if (isAnimating || index === currentSlide) return;
+        isAnimating = true;
+        
+        // Determine direction of slide movement
+        const direction = index > currentSlide ? 'next' : 'prev';
+        
+        // Update indices
+        const prevCurrentSlide = currentSlide;
+        currentSlide = index;
+        nextSlideIndex = (currentSlide + 1) % slides.length;
+        const prevSlideIndex = (currentSlide - 1 + slides.length) % slides.length;
+        
+        if (direction === 'next') {
+            // Current slide moves left
+            slides[prevCurrentSlide].style.transform = 'translateX(-100%)';
+            slides[prevCurrentSlide].style.opacity = '0.7';
+            slides[prevCurrentSlide].style.zIndex = '1';
+            slides[prevCurrentSlide].classList.add('prev');
+            slides[prevCurrentSlide].classList.remove('active', 'next');
+            
+            // Target slide moves in from right
+            slides[currentSlide].style.transform = 'translateX(0)';
+            slides[currentSlide].style.opacity = '1';
+            slides[currentSlide].style.zIndex = '2';
+            slides[currentSlide].classList.add('active');
+            slides[currentSlide].classList.remove('next', 'prev');
+            
+            // Prepare next slide
+            slides[nextSlideIndex].style.transform = 'translateX(100%)';
+            slides[nextSlideIndex].style.opacity = '0.7';
+            slides[nextSlideIndex].style.zIndex = '1';
+            slides[nextSlideIndex].classList.add('next');
+            slides[nextSlideIndex].classList.remove('active', 'prev');
+        } else {
+            // Current slide moves right
+            slides[prevCurrentSlide].style.transform = 'translateX(100%)';
+            slides[prevCurrentSlide].style.opacity = '0.7';
+            slides[prevCurrentSlide].style.zIndex = '1';
+            slides[prevCurrentSlide].classList.add('next');
+            slides[prevCurrentSlide].classList.remove('active', 'prev');
+            
+            // Target slide moves in from left
+            slides[currentSlide].style.transform = 'translateX(0)';
+            slides[currentSlide].style.opacity = '1';
+            slides[currentSlide].style.zIndex = '2';
+            slides[currentSlide].classList.add('active');
+            slides[currentSlide].classList.remove('next', 'prev');
+            
+            // Prepare prev slide
+            slides[prevSlideIndex].style.transform = 'translateX(-100%)';
+            slides[prevSlideIndex].style.opacity = '0.7';
+            slides[prevSlideIndex].style.zIndex = '1';
+            slides[prevSlideIndex].classList.add('prev');
+            slides[prevSlideIndex].classList.remove('active', 'next');
+        }
+        
+        // Other slides
+        slides.forEach((slide, i) => {
+            if (i !== prevCurrentSlide && i !== currentSlide && i !== nextSlideIndex && i !== prevSlideIndex) {
+                slide.classList.remove('active', 'next', 'prev');
+                slide.style.transform = direction === 'next' ? 'translateX(100%)' : 'translateX(-100%)';
+                slide.style.opacity = '0';
+                slide.style.zIndex = '0';
+            }
+        });
+        
+        // Update dots
+        updateDots();
+        
+        // Reset animation flag after transition completes
+        setTimeout(() => {
+            isAnimating = false;
+        }, animationDuration);
+        
+        // Reset progress bar
+        resetProgressBar();
+    }
+    
+    function updateDots() {
+        dots.forEach((dot, index) => {
+            dot.classList.remove('active');
+            if (index === currentSlide) {
+                dot.classList.add('active');
+            }
+        });
+    }
+    
+    function resetTimer() {
+        clearInterval(slideInterval);
+        startSlider();
+    }
+    
+    // Progress bar animation
+    function animateProgressBar() {
+    progressBar.style.transition = `width ${slideDuration}ms linear`;
+    progressBar.style.width = '100%';
+}
+
+    
+    function resetProgressBar() {
+        progressBar.style.transition = 'none';
+        progressBar.style.width = '0';
+        setTimeout(() => {
+            animateProgressBar();
+        }, 10);
+    }
+    
+    // Enhanced dots animation
+    dots.forEach(dot => {
+        dot.style.transition = 'transform 0.3s ease, background-color 0.3s ease';
+        dot.addEventListener('mouseenter', () => {
+            dot.style.transform = 'scale(1.3)';
+        });
+        dot.addEventListener('mouseleave', () => {
+            dot.style.transform = 'scale(1)';
+        });
+    });
+    
+    // Initialize
+    startSlider();
+    animateProgressBar();
+    
+    // Header scroll effect with enhanced animation
+    const header = document.getElementById('header');
+    header.style.transition = 'background-color 0.3s ease, box-shadow 0.3s ease, padding 0.3s ease';
+    
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+    });
+    
+    // Pause slider on hover with visual feedback
+    const slider = document.querySelector('.hero-slider');
+
+slider.addEventListener('mouseenter', () => {
+    clearInterval(slideInterval);
+    progressBar.style.transition = 'none';
+    const currentWidth = progressBar.offsetWidth;
+    progressBar.style.width = `${currentWidth}px`;
+
+    // Visual indicator that slider is paused
+    progressBar.style.opacity = '0.5';
+});
+
+slider.addEventListener('mouseleave', () => {
+    progressBar.style.opacity = '1';
+    resetTimer();
+    const currentWidth = progressBar.offsetWidth;
+    const remainingTime = slideDuration * (currentWidth / slider.offsetWidth);
+
+    progressBar.style.transition = `width ${remainingTime}ms linear`;
+    progressBar.style.width = '100%';
+});
+
+    
+    // Three dot menu functionality with animation
+    const dotMenu = document.getElementById('dotMenu');
+    const authDropdown = document.getElementById('authDropdown');
+    
+    // Add animation styles
+    dotMenu.style.transition = 'transform 0.3s ease';
+    authDropdown.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+    authDropdown.style.transformOrigin = 'top right';
+    
+    dotMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dotMenu.classList.toggle('active');
+        dotMenu.style.transform = dotMenu.classList.contains('active') ? 'rotate(90deg)' : 'rotate(0)';
+        
+        authDropdown.classList.toggle('active');
+        if (authDropdown.classList.contains('active')) {
+            authDropdown.style.opacity = '1';
+            authDropdown.style.transform = 'scale(1)';
+        } else {
+            authDropdown.style.opacity = '0';
+            authDropdown.style.transform = 'scale(0.9)';
+        }
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!authDropdown.contains(e.target) && e.target !== dotMenu) {
+            dotMenu.classList.remove('active');
+            dotMenu.style.transform = 'rotate(0)';
+            authDropdown.classList.remove('active');
+            authDropdown.style.opacity = '0';
+            authDropdown.style.transform = 'scale(0.9)';
+        }
+    });
+    
+    // Toggle between sign in and sign up forms with slide animation
+    const showSignUp = document.getElementById('showSignUp');
+    const showSignIn = document.getElementById('showSignIn');
+    const signInForm = document.getElementById('signInForm');
+    const signUpForm = document.getElementById('signUpForm');
+    
+    // Add transition styles
+    signInForm.style.transition = 'transform 0.5s ease, opacity 0.5s ease';
+    signUpForm.style.transition = 'transform 0.5s ease, opacity 0.5s ease';
+    
+    showSignUp.addEventListener('click', (e) => {
+        e.preventDefault();
+        authDropdown.classList.add('sign-up-active');
+        
+        // Slide animation
+        signInForm.style.transform = 'translateX(-100%)';
+        signInForm.style.opacity = '0';
+        
+        signUpForm.style.transform = 'translateX(0)';
+        signUpForm.style.opacity = '1';
+    });
+    
+    showSignIn.addEventListener('click', (e) => {
+        e.preventDefault();
+        authDropdown.classList.remove('sign-up-active');
+        
+        // Slide animation
+        signInForm.style.transform = 'translateX(0)';
+        signInForm.style.opacity = '1';
+        
+        signUpForm.style.transform = 'translateX(100%)';
+        signUpForm.style.opacity = '0';
+    });
+    
+    // Form submission with feedback animation
+    signInForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        // Add submission animation
+        const submitBtn = signInForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        
+        submitBtn.textContent = 'Signing in...';
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.7';
+        
+        setTimeout(() => {
+            alert('Sign in functionality would be implemented here');
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
+            
+            dotMenu.classList.remove('active');
+            dotMenu.style.transform = 'rotate(0)';
+            authDropdown.classList.remove('active');
+            authDropdown.style.opacity = '0';
+            authDropdown.style.transform = 'scale(0.9)';
+        }, 1000);
+    });
+    
+    signUpForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        // Add submission animation
+        const submitBtn = signUpForm.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        
+        submitBtn.textContent = 'Creating account...';
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.7';
+        
+        setTimeout(() => {
+            alert('Sign up functionality would be implemented here');
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
+            
+            dotMenu.classList.remove('active');
+            dotMenu.style.transform = 'rotate(0)';
+            authDropdown.classList.remove('active');
+            authDropdown.style.opacity = '0';
+            authDropdown.style.transform = 'scale(0.9)';
+        }, 1000);
+    });
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') {
+            nextSlide();
+            resetTimer();
+        } else if (e.key === 'ArrowLeft') {
+            prevSlide();
+            resetTimer();
+        }
+    });
+    
+    // Touch events for mobile swipe with enhanced feedback
+    let touchStartX = 0;
+    let touchEndX = 0;
+    let touchStartY = 0;
+    let touchEndY = 0;
+    let isSwiping = false;
+    
+    slider.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+        clearInterval(slideInterval);
+        
+        // Visual feedback
+        progressBar.style.opacity = '0.5';
+        isSwiping = true;
+    }, {passive: true});
+    
+    slider.addEventListener('touchmove', (e) => {
+        if (!isSwiping || isAnimating) return;
+        
+        const currentX = e.changedTouches[0].screenX;
+        const diffX = currentX - touchStartX;
+        const activeSlide = slides[currentSlide];
+        const prevSlideIndex = (currentSlide - 1 + slides.length) % slides.length;
+        const nextSlideIndex = (currentSlide + 1) % slides.length;
+        
+        // Limit the movement to prevent excessive dragging
+        const maxSwipe = slider.offsetWidth * 0.5;
+        const limitedDiff = Math.max(Math.min(diffX, maxSwipe), -maxSwipe);
+        const movePercentage = (limitedDiff / maxSwipe) * 100;
+        
+       // Move active slide with finger
+activeSlide.style.transition = 'none';
+activeSlide.style.transform = `translateX(${movePercentage}%)`;
+
+// Show preview of next/prev slides
+if (diffX < 0) {
+    // Showing next slide preview
+    slides[nextSlideIndex].style.transition = 'none';
+    slides[nextSlideIndex].style.transform = `translateX(${100 + movePercentage}%)`;
+    slides[nextSlideIndex].style.opacity = '0.7';
+    slides[nextSlideIndex].style.zIndex = '1';
+} else {
+    // Showing prev slide preview
+    slides[prevSlideIndex].style.transition = 'none';
+    slides[prevSlideIndex].style.transform = `translateX(${-100 + movePercentage}%)`;
+    slides[prevSlideIndex].style.opacity = '0.7';
+    slides[prevSlideIndex].style.zIndex = '1';
+}
+}, { passive: true });
+
+slider.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    touchEndY = e.changedTouches[0].screenY;
+
+    // Restore transitions
+    slides.forEach(slide => {
+        slide.style.transition = `transform ${animationDuration}ms ease-in-out, opacity ${animationDuration}ms ease-in-out`;
+    });
+});
+
+        handleSwipe();
+        resetTimer();
+        progressBar.style.opacity = '1';
+        isSwiping = false;
+    }, {passive: true});
+    
+    function handleSwipe() {
+        const threshold = 50;
+        const diffX = touchEndX - touchStartX;
+        const diffY = Math.abs(touchEndY - touchStartY);
+        
+        // Only handle horizontal swipes (ignore vertical scrolling attempts)
+        if (diffY < 100) {
+            if (diffX < -threshold && !isAnimating) {
+                nextSlide();
+            } else if (diffX > threshold && !isAnimating) {
+                prevSlide();
+            } else {
+                // Return to center if swipe wasn't strong enough
+                slides[currentSlide].style.transform = 'translateX(0)';
+                slides[currentSlide].style.opacity = '1';
+                
+                // Reset other slides position
+                const nextSlideIndex = (currentSlide + 1) % slides.length;
+                const prevSlideIndex = (currentSlide - 1 + slides.length) % slides.length;
+                
+                slides[nextSlideIndex].style.transform = 'translateX(100%)';
+                slides[prevSlideIndex].style.transform = 'translateX(-100%)';
+            }
+        } else {
+            // Return to center if it was a vertical scroll attempt
+            slides[currentSlide].style.transform = 'translateX(0)';
+        }
+    }
+    
+    // Add resize handler to ensure proper slider function on window resize
+    window.addEventListener('resize', () => {
+        // Reset progress bar width calculation
+        resetProgressBar();
+    });
+});
+document.addEventListener('DOMContentLoaded', () => {
+          initSlider();              // Your sliding code
+          initMovieRecommender();    // Movie mood recommendation
+          initFooterEffects();       // Floating logos, parallax, wave input
+        });
+      
+        function initSlider() {
+          // Your sliding hero functionality here...
+        }
+      
+        function initMovieRecommender() {
+  const recommendations = {
+    comedy: [{ emoji: '😂', title: 'The Hangover' }],
+    // other categories...
+  };
+
+  document.getElementById('moodInput').addEventListener('input', recommendMovies);
+
+  function recommendMovies() {
+    const input = document.getElementById('moodInput').value.trim().toLowerCase();
+    const moodDisplay = document.getElementById('moodDisplay');
+    const movieRecommendations = document.getElementById('movieRecommendations');
+
+    if (!input || !recommendations[input]) {
+      moodDisplay.innerText = `No recommendations for "${input}". Try comedy, sad, romantic, action, or horror.`;
+      movieRecommendations.innerHTML = '';
+      return;
+    }
+
+    moodDisplay.innerText = `Mood: ${input.charAt(0).toUpperCase() + input.slice(1)} 🎬`;
+    movieRecommendations.innerHTML = '';
+
+    recommendations[input].forEach(movie => {
+      const card = document.createElement('div');
+      card.className = 'movie-card';
+      card.innerHTML = `<div class="emoji">${movie.emoji}</div><div class="title">${movie.title}</div>`;
+      movieRecommendations.appendChild(card);
+    });
+  }
+}
+
+function initFooterEffects() {
+  const floatingLogos = document.getElementById('floatingLogos');
+  const movieLogos = ['🎬', '🍿', '📽', '🎥', '🎞', '👨‍🎤', '👩‍🎤', '🦸', '🦹', '👽', '🤖', '👻', '💃', '🕺', '🎭', '🎫', '🏆', '⭐', '🌟', '✨', '🎟', '🎦', '🔮'];
+
+  for (let i = 0; i < 25; i++) {
+    const logo = document.createElement('div');
+    logo.className = 'floating-logos';
+    logo.innerHTML = movieLogos[Math.floor(Math.random() * movieLogos.length)];
+
+    logo.style.left = `${Math.random() * 100}%`;
+    logo.style.top = `${Math.random() * 100}%`;
+    logo.style.fontSize = `${Math.random() * 30 + 20}px`;
+    logo.style.animationDelay = `${Math.random() * 5}s`;
+    logo.style.animationDuration = `${Math.random() * 10 + 10}s`;
+    logo.style.opacity = `${Math.random() * 0.1 + 0.03}`;
+    logo.style.animationName = 'float';
+    logo.style.animationIterationCount = 'infinite';
+    logo.style.animationTimingFunction = 'ease-in-out';
+
+    floatingLogos.appendChild(logo);
+  }
+
+  document.addEventListener('mousemove', (e) => {
+    const x = e.clientX / window.innerWidth;
+    const y = e.clientY / window.innerHeight;
+
+    const logos = document.querySelectorAll('.floating-logos');
+    logos.forEach((logo, index) => {
+      const speedX = (index % 3) * 0.2 + 0.1;
+      const speedY = (index % 2) * 0.2 + 0.1;
+
+      const moveX = (x - 0.5) * 50 * speedX;
+      const moveY = (y - 0.5) * 50 * speedY;
+
+      logo.style.transform = `translate(${moveX}px, ${moveY}px) rotate(${moveX}deg)`;
+    });
+  });
+
+  const socialIcons = document.querySelectorAll('.social-icon');
+  socialIcons.forEach(icon => {
+    icon.addEventListener('mouseenter', () => {
+      // You can add hover effect logic here
+    });
+  });
+}
+
+icon.style.animation = 'glow 1.5s infinite';
+});
+
+icon.addEventListener('mouseleave', () => {
+  icon.style.animation = '';
+});
+});
+
+const newsletterInput = document.querySelector('.newsletter-input');
+
+newsletterInput.addEventListener('focus', () => {
+  const wave = document.createElement('div');
+  wave.style.position = 'absolute';
+  wave.style.width = '5px';
+  wave.style.height = '5px';
+  wave.style.backgroundColor = 'rgba(0, 173, 239, 0.5)';
+  wave.style.borderRadius = '50%';
+  wave.style.pointerEvents = 'none';
+  wave.style.transform = 'translate(-50%, -50%)';
+  wave.style.animation = 'wave 1s ease-out forwards';
+
+  document.body.appendChild(wave);
+
+  function createWave(x, y) {
+    const clone = wave.cloneNode();
+    clone.style.left = `${x}px`;
+    clone.style.top = `${y}px`;
+    document.body.appendChild(clone);
+
+    setTimeout(() => clone.remove(), 1000);
+  }
+
+  function waveMotion(e) {
+    if (document.activeElement === newsletterInput) {
+      createWave(e.clientX, e.clientY);
+    }
+  }
+
+  document.addEventListener('mousemove', waveMotion);
+
+  newsletterInput.addEventListener('blur', () => {
+    wave.remove();
+    document.removeEventListener('mousemove', waveMotion);
+  }, { once: true });
+});
+
+</script>
+    <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.84/build/spline-viewer.js"></script>
+      
+</head>
+<body>

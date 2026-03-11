@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Account</title>
+</head>
+<body>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background-color: #0a0a0a;
+      color: white;
+    }
+
+    .header {
+      background-color: #0a3d68;
+      padding: 15px;
+      display: flex;
+      align-items: center;
+    }
+
+    .back-btn {
+      font-size: 20px;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+
+    .header-text {
+      font-size: 18px;
+    }
+
+    .menu {
+      padding: 20px;
+    }
+
+    .menu-item {
+      padding: 15px 0;
+      border-bottom: 1px solid #333;
+      cursor: pointer;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.9);
+      z-index: 999;
+      color: white;
+    }
+
+    .modal-content,
+    #supportModal .modal-content {
+      width: 90%;
+      max-width: 600px;
+      margin: 5vh auto;
+      background-color: #222;
+      padding: 25px;
+      border-radius: 10px;
+      text-align: center;
+      position: relative;
+      box-sizing: border-box;
+    }
+
+    .close-btn {
+      float: right;
+      font-size: 25px;
+      cursor: pointer;
+    }
+
+    .subtext {
+      color: #aaa;
+      margin-bottom: 20px;
+    }
+
+    .language-options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .lang-box {
+      background-color: #222;
+      padding: 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
+    }
+
+    .lang-box:hover {
+      border-color: #0a3d68;
+      box-shadow: 0 0 10px #0a3d68aa;
+      transform: translateY(-2px);
+    }
+
+    .lang-box input {
+      margin-right: 10px;
+    }
+
+    .continue-btn {
+      margin-top: 30px;
+      width: 100%;
+      padding: 15px;
+      background-color: #0a3d68;
+      border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #supportModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.9);
+      z-index: 999;
+      color: white;
+    }
+
+    #supportModal .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 25px;
+      cursor: pointer;
+      color: #aaa;
+    }
+
+    #supportModal button {
+      font-size: 16px;
+      border-radius: 5px;
+      padding: 15px;
+      margin-top: 15px;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    #supportModal button:first-of-type {
+      background-color: transparent;
+      color: white;
+      border: 1px solid #aaa;
+    }
+
+    #supportModal button:last-of-type {
+      background-color: #0a3d68;
+      border: none;
+      color: white;
+    }
+
+    .sub-message {
+      font-size: 14px;
+      color: #aaa;
+      margin: 10px 0 20px 0;
+      text-align: center;
+    }
+
+    input[type="radio"]:checked {
+      accent-color: #0a3d68; 
+     }
+      .faq-tab {
+    padding: 8px 16px;
+    background-color: transparent;
+    border: 1px solid #0a3d68;
+    border-radius: 20px;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s ease;
+  }
+  .faq-tab.active, .faq-tab:hover {
+    background-color: #0a3d68;
+  }
+
+  .faq-item {
+    margin-bottom: 15px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+  }
+  .faq-question {
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .plus {
+    color: #0a3d68;
+    font-weight: bold;
+  }
+  .faq-answer {
+  display: none;
+  padding: 10px 0 0 25px;
+  font-size: 14px;
+  color: #ccc;
+  line-height: 1.5;
+}
+.faq-item.active .faq-answer {
+  display: block;
+}
+
+ /* General Modal Styles */
+.modal {
+  display: none; /* By default hidden */
+  position: fixed;
+  z-index: 1; /* Upar dikhane ke liye */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent background */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #111;
+  margin: 10% auto;
+  padding: 20px;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 600px;
+  color: white;
+}
+
+/* Close Button */
+.close-btn {
+  color: white;
+  font-size: 28px;
+  font-weight: bold;
+  position: absolute;
+  top: 10px;
+  right: 25px;
+  cursor: pointer;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+  color: #f1f1f1;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Grievance Card */
+.grievance-card {
+  margin-bottom: 20px;
+}
+
+.accordion {
+  background-color: #2b2b2b;
+  color: white;
+  cursor: pointer;
+  padding: 14px 20px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 16px;
+  border-radius: 10px;
+  transition: 0.3s;
+}
+
+.accordion::after {
+  content: '\25BC'; /* Arrow for accordion */
+  float: right;
+  margin-left: 10px;
+  transition: transform 0.3s ease;
+}
+
+.accordion.active::after {
+  transform: rotate(180deg); /* Rotate the arrow when active */
+}
+
+/* Panel (Accordion content) */
+.panel {
+  padding: 0 20px;
+  background-color: #1c1c1c;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+  border-radius: 0 0 10px 10px;
+}
+
+.panel input,
+.panel textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  background-color: #2b2b2b;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 14px;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #0a3d68;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.submit-btn:hover {
+  background-color: #0c4b7d;
+}
+@media (min-width: 768px) {
+      .modal-content {
+        max-width: 500px;
+      }
+
+      #supportModal .modal-content {
+        max-width: 400px;
+      }
+
+      .header-text {
+        font-size: 20px;
+        font-weight: bold;
+        color: white;
+        text-decoration: none;
+      }
+    }
+  </style>
+
+  <!-- Header -->
+<div class="header">
+  <span onclick="history.back()" class="back-btn">⬅</span>
+  <a href="sign.html" class="header-text" style="text-decoration: none; color: inherit;">Sign in / Sign Up</a>
+</div>
+
+  
+
+  <!-- Menu -->
+  <div class="menu">
+    <div onclick="openModal()" class="menu-item">Languages <span style="float:right">&#8250;</span></div>
+    <div onclick="openSupportModal()" class="menu-item">Help & Support <span style="float:right">&#8250;</span></div>
+    <div onclick="openFAQModal()" class="menu-item">FAQs <span style="float:right">&#8250;</span></div>
+    <div onclick="openGrievanceModal()" class="menu-item">Grievance Redressal <span style="float:right">&#8250;</span></div>
+    <div onclick="openAboutModal()" class="menu-item">About Us <span style="float:right">&#8250;</span></div>
+    <a href="deep1.html" class="menu-item" style="display:block; text-decoration:none; color:inherit;">
+      Become Our Partner<span style="float:right">&#8250;</span>
+    </a>
+    
+    <div class="menu-item">Become A FLIQS Creator <span style="float:right">&#8250;</span></div>
+    
+  </div>
+
+    <!-- Language Modal -->
+  <div id="languageModal" class="modal">
+    <div class="modal-content">
+      <span onclick="closeModal()" class="close-btn">✕</span>
+      <h2>Choose your preferred languages</h2>
+      <p class="subtext">This will enable you to set the app's display language to your chosen option</p>
+
+      <div class="language-options">
+        <label class="lang-box"><input type="radio" name="lang" checked>English<br><small>Watcho display language will be set to English</small></label>
+        <label class="lang-box"><input type="radio" name="lang">Hindi<br><small>हिंदी</small></label>
+        <label class="lang-box"><input type="radio" name="lang">Telugu<br><small>తెలుగు</small></label>
+        <label class="lang-box"><input type="radio" name="lang">Tamil<br><small>தமிழ்</small></label>
+        <label class="lang-box"><input type="radio" name="lang">Bengali<br><small>বাংলা</small></label>
+      </div>
+
+      <button class="continue-btn">CONTINUE</button>
+    </div>
+  </div>
+
+  <!-- Support Modal -->
+  <div id="supportModal" class="modal">
+    <div class="modal-content">
+      <span onclick="closeSupportModal()" class="close-btn">✕</span>
+      <h3 style="text-align:center; margin-top: 20px;">Please Sign In to connect with our support team</h3>
+      <p class="sub-message">Signing in helps us serve you better and keep track of your support requests.</p>
+      <button onclick="closeSupportModal()">Cancel</button>
+      <button>SIGN IN</button>
+    </div>
+  </div>
+    <!----FAQs Modal-->
+<div id="faqModal" class="modal">
+  <div class="modal-content">
+    <span onclick="closeFAQModal()" class="close-btn">✕</span>
+    <h2>Frequently Asked Questions</h2>
+
+    <!-- FAQ Filters -->
+    <div style="display: flex; flex-wrap: wrap; gap: 10px; margin: 20px 0;">
+      <button class="faq-tab active">Account Related</button>
+      <button class="faq-tab">OTT Plans and Bundle</button>
+      <button class="faq-tab">Offers Details</button>
+      <button class="faq-tab">Subscribe, Cancel & Renew</button>
+    </div>
+
+    <!-- FAQ Items -->
+<div class="faq-item">
+  <div class="faq-question" onclick="toggleFAQ(this)">
+    <span class="plus">＋</span>
+    Account Access, Password, Mobile Number issues
+  </div>
+  <div class="faq-answer">
+    You can update your account details like password and mobile number from the profile settings section. If you're facing issues, please contact support.
+  </div>
+</div>
+
+<div class="faq-item">
+  <div class="faq-question" onclick="toggleFAQ(this)">
+    <span class="plus">＋</span>
+    Login Issues
+  </div>
+  <div class="faq-answer">
+    Make sure your credentials are correct. Try resetting your password if you're unable to log in.
+  </div>
+</div>
+
+<div class="faq-item">
+  <div class="faq-question" onclick="toggleFAQ(this)">
+    <span class="plus">＋</span>
+    Watch/ Stream Watcho OTT contents
+  </div>
+  <div class="faq-answer">
+    You can stream Watcho content through our app or website. Ensure you have a valid subscription and stable internet.
+  </div>
+</div>
+
+<div class="faq-item">
+  <div class="faq-question" onclick="toggleFAQ(this)">
+    <span class="plus">＋</span>
+    Watcho App & Web Features
+  </div>
+  <div class="faq-answer">
+    Explore live TV, short videos, and original series through our feature-rich app and web platform.
+  </div>
+</div>
+
+<div class="faq-item">
+  <div class="faq-question" onclick="toggleFAQ(this)">
+    <span class="plus">＋</span>
+    Get In Touch
+  </div>
+  <div class="faq-answer">
+    Visit the Help & Support section or drop us an email at support@watcho.com for any queries.
+  </div>
+</div>
+</div>
+</div>
+
+   <!-- Grievance Modal -->
+<div id="grievanceModal" class="modal">
+  <div class="modal-content">
+    <span onclick="closeGrievanceModal()" class="close-btn">✕</span>
+    <h2>Grievance Redressal</h2>
+    <p class="subtext">If you have any unresolved issues, please fill out this form and let us know.</p>
+
+    <!-- Grievance Cards -->
+    <div class="grievance-card">
+      <button class="accordion">Register Grievance for OTT Content</button>
+      <div class="panel">
+        <input type="text" placeholder="Your Name">
+        <input type="email" placeholder="Your Email">
+        <textarea placeholder="Describe your issue..."></textarea>
+        <button class="submit-btn">Submit</button>
+      </div>
+    </div>
+
+    <div class="grievance-card">
+      <button class="accordion">Register Grievance for Social Media Content</button>
+      <div class="panel">
+        <input type="text" placeholder="Your Name">
+        <input type="email" placeholder="Your Email">
+        <textarea placeholder="Describe your issue..."></textarea>
+        <button class="submit-btn">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- About Us Modal -->
+<div id="aboutModal" class="modal">
+  <div class="modal-content">
+    <span onclick="closeAboutModal()" class="close-btn">✕</span>
+    <h2>About Us</h2>
+    <p>
+      cinevo, a premium OTT platform from Dish TV that streams videos online, is your best bet in entertainment with hundreds of hours of quality content from leading production houses and publishers. It's a one-stop destination for your distinct entertainment preferences that lets you watch movies online, web series India, comedy shows, Kannada web series, entertainment shows on Live TV channels and Live news apart from handpicked short films.
+    </p>
+    <p>
+      At cinevo, we believe in everything creative. Upload a video of your creative performance and get featured on the website and cinevo in 'cinevo Creator Videos' and get an instant kiss of fame. Watcho Originals and cinevo Spotlight offer the consumption of unique content made in-house to quench your thirst for mind-blowing short films, entertainment shows, and web series. Apart from exclusive Watcho original content, we stress on streaming content in other regional languages as Tamil, Telugu, Kannada, and Malayalam too to unite the nation.
+    </p>
+    <p>
+      cinevo is a great proposition for unique and original web series, short films, and some amazing comedy web series apart from Hindi and regional movies online. Get the cinevo and unleash the doors to infinite original and entertaining content!
+    </p>
+  </div>
+</div>
+
+
+  <!-- Scripts -->
+
+  <script>
+    function openModal() {
+      document.getElementById('languageModal').style.display = 'block';
+    }
+
+    function closeModal() {
+      document.getElementById('languageModal').style.display = 'none';
+    }
+
+    function openSupportModal() {
+      document.getElementById('supportModal').style.display = 'block';
+    }
+
+    function closeSupportModal() {
+      document.getElementById('supportModal').style.display = 'none';
+    }
+    function openFAQModal() {
+  document.getElementById('faqModal').style.display = 'block';
+}
+function closeFAQModal() {
+  document.getElementById('faqModal').style.display = 'none';
+} 
+function toggleFAQ(el) {
+  const item = el.parentElement;
+  const plus = el.querySelector(".plus");
+  const isActive = item.classList.contains("active");
+
+  // Close all open items (optional)
+  document.querySelectorAll('.faq-item').forEach(f => {
+    f.classList.remove('active');
+    f.querySelector('.plus').innerText = '＋';
+  });
+
+  // Toggle current item
+  if (!isActive) {
+    item.classList.add("active");
+    plus.innerText = "－";
+  }
+}
+
+// Open Grievance Modal
+function openGrievanceModal() {
+  document.getElementById('grievanceModal').style.display = 'block';
+}
+
+// Close Grievance Modal
+function closeGrievanceModal() {
+  document.getElementById('grievanceModal').style.display = 'none';
+}
+
+// Accordion Toggle (Grievance form ke andar)
+const accordions = document.querySelectorAll(".accordion");
+
+accordions.forEach((accordion) => {
+  accordion.addEventListener("click", function () {
+    this.classList.toggle("active");
+    const panel = this.nextElementSibling;
+    if (panel.style.maxHeight) {
+      panel.style.maxHeight = null;
+    } else {
+      panel.style.maxHeight = panel.scrollHeight + "px";
+    }
+  });
+});
+function openAboutModal() {
+    document.getElementById('aboutModal').style.display = 'block';
+  }
+  function closeAboutModal() {
+    document.getElementById('aboutModal').style.display = 'none';
+  }
+</script>
+</body>
+</html>

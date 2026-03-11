@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Pricing Cards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgb(2, 2, 23);
+            perspective: 1000px;
+        }
+
+        .container {
+            display: flex;
+            gap: 2rem;
+            padding: 2rem;
+            flex-wrap: wrap;
+            color: #ffffff;
+            justify-content: center;
+        }
+
+        .card {
+            background: rgb(0, 0, 0);
+            border-radius: 20px;
+            padding: 2rem;
+            width: 320px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: all 0.5s ease;
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: rotateY(10deg) rotateX(10deg) translateZ(30px);
+            box-shadow: 0 20px 40px rgba(255, 255, 255, 0.2);
+        }
+
+        .card::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            transform: translateZ(-40px);
+            background: linear-gradient(45deg, #1900ff, #00c3ff);
+            filter: blur(30px);
+            opacity: 0.1;
+        }
+
+        .badge {
+            background: goldenrod;
+            color: rgb(0, 0, 0);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            position: absolute;
+            top: -15px;
+            right: 20px;
+            font-size: 0.9rem;
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+        }
+
+        h2 { color: #ffffff; margin-bottom: 1rem; }
+
+        .price {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 1rem 0;
+            color: #ffffff;
+        }
+
+        ul {
+            list-style: none;
+            margin: 2rem 0;
+        }
+
+        li {
+            padding: 0.7rem 0;
+            border-bottom: 1px solid #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        li::before {
+            content: "✓";
+            color: #63f17f;
+            font-weight: bold;
+        }
+
+        button {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 10px;
+            background: #fffafa;
+            color: rgb(0, 0, 0);
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 4, 235, 0.4);
+        }
+
+        .free button { background: #e0e7ff; color: #000000; }
+        .pro { transform: scale(1.05); z-index: 1; }
+        .pro button { background: #fefeff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Free Card -->
+        <div class="card free">
+            <h2>Free</h2>
+            <div class="price">$0</div>
+            <ul>
+                <li>Commercial use</li>
+                <li>Private image generations</li>
+                <li>5 one time credits</li>
+                <li>Generate up to 2 images per prompt</li>
+                <li>Canvas and Feed views</li>
+                <li>3 background removals</li>
+            </ul>
+            <button>Continue</button>
+        </div>
+
+        <!-- Plus Card -->
+        <div class="card pro">
+            <div class="badge">Most Popular</div>
+            <h2>Plus</h2>
+            <div class="price">$20<span>/month</span></div>
+            <ul>
+                <li>Unlimited logo generations</li>
+                <li>200 monthly credits</li>
+                <li>Generate up to 6 images</li>
+                <li>Open mode for all designs</li>
+                <li>Team collaboration (soon)</li>
+            </ul>
+            <button>Start 7 Day Free Trial</button>
+        </div>
+
+        <!-- Pro Card -->
+        <div class="card">
+            <h2>Pro</h2>
+            <div class="price">$40<span>/month</span></div>
+            <ul>
+                <li>Everything from Plus</li>
+                <li>400 monthly credits</li>
+                <li>Generate up to 9 images</li>
+                <li>Priority support</li>
+                <li>Model training (soon)</li>
+            </ul>
+            <button>Start 7 Day Free Trial</button>
+        </div>
+    </div>
+
+    <script>
+        // Add 3D rotation effect on mouse move
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = card.offsetWidth / 2;
+                const centerY = card.offsetHeight / 2;
+                
+                const rotateY = (x - centerX) / 20;
+                const rotateX = (y - centerY) / -20;
+                
+                card.style.transform = `
+                    rotateX(${rotateX}deg) 
+                    rotateY(${rotateY}deg) 
+                    translateZ(30px)
+                `;
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'rotateX(0) rotateY(0) translateZ(0)';
+            });
+        });
+    </script>
+</body>
+</html>

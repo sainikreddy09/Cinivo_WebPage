@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NetMirror Kids</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    :root {
+      --bg-dark: #121212;
+      --card-bg: #1e1e1e;
+      --accent: #00b4d8;
+      --text-light: #ffffff;
+      --text-secondary: #b3b3b3;
+      --shadow-color: #001f3f; /* Navy blue shadow color */
+      --hover-shadow: 0 8px 16px rgba(0, 31, 63, 0.6); /* Navy blue shadow */
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+      background-color: #0a0a0a;
+      color:var(--text-light) ;
+      padding-top: 80px;
+    }
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 20px 50px;
+      background-color: rgba(20, 20, 20, 0.9);
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--accent);
+    }
+
+    
+
+    .container {
+      padding: 40px 50px;
+    }
+
+    .row-container {
+      margin-bottom: 50px;
+      position: relative;
+    }
+
+    .row-title {
+      font-size: 1.6rem;
+      margin-bottom: 15px;
+      color: var(--accent);
+    }
+
+    .row-posters {
+      display: flex;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      padding: 15px 0;
+      gap: 15px; /* Consistent gap between cards */
+      scrollbar-width: none; /* Hide scrollbar for Firefox */
+    }
+
+    .row-posters::-webkit-scrollbar {
+      display: none; /* Hide scrollbar for Chrome/Safari */
+    }
+
+    .movie-card {
+      flex: 0 0 auto;
+      border-radius: 8px;
+      overflow: hidden;
+      background-color: var(--card-bg);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+      width: 180px;
+      position: relative;
+    }
+
+    .movie-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      box-shadow: 0 0 0 var(--shadow-color);
+      transition: box-shadow 0.3s ease;
+      border-radius: 8px;
+      pointer-events: none;
+    }
+
+    .movie-card:hover {
+      transform: scale(1.08);
+      z-index: 5;
+    }
+
+    .movie-card:hover::after {
+      box-shadow:rgb(19, 158, 176) ;
+    }
+
+    .movie-card img {
+      width: 100%;
+      height: 260px;
+      object-fit: cover;
+      display: block;
+      border-bottom: 1px solid #333;
+    }
+
+    .movie-title {
+      padding: 12px;
+      font-size: 1rem;
+      font-weight: 500;
+      text-align: center;
+      color: var(--text-light);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .scroll-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: rgba(0, 0, 0, 0.6);
+      color: #fff;
+      border: none;
+      font-size: 2rem;
+      cursor: pointer;
+      z-index: 10;
+      padding: 15px 10px;
+      border-radius: 50%;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .row-container:hover .scroll-btn {
+      opacity: 1;
+    }
+
+    .scroll-btn.left {
+      left: 0;
+    }
+
+    .scroll-btn.right {
+      right: 0;
+    }
+
+    .kids-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .kids-header h1 {
+      color: var(--accent);
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .kids-header p {
+      color: var(--text-secondary);
+      font-size: 1.2rem;
+    }
+
+    @media screen and (max-width: 600px) {
+      .movie-card {
+        width: 140px;
+      }
+
+      .movie-card img {
+        height: 200px;
+      }
+
+      .logo {
+        font-size: 1.3rem;
+      }
+
+      .row-title {
+        font-size: 1.2rem;
+      }
+      
+      .container {
+        padding: 20px;
+      }
+      
+      .scroll-btn {
+        display: none; /* Hide scroll buttons on mobile */
+      }
+    }
+
+  /* Add these changes to your existing style section */
+
+  .movie-card {
+    transform-style: preserve-3d;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    position: relative;
+  }
+
+  .movie-card:hover {
+    transform: perspective(1000px) rotateY(10deg) scale(1.08) translateZ(20px);
+    z-index: 10;
+  }
+
+  .movie-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 8px;
+    box-shadow: 0 0 0 rgba(0, 180, 216, 0);
+    transition: all 0.3s ease;
+  }
+
+  .movie-card:hover::after {
+    box-shadow: 0 0 25px rgba(0, 180, 216, 0.6);
+    border:rgba(0, 180, 216, 0.6);
+  }
+
+  .movie-card img {
+    transition: transform 0.3s ease;
+  }
+
+  .movie-card:hover img {
+    transform: translateZ(10px);
+  }
+
+  .movie-title {
+    transition: transform 0.3s ease;
+  }
+
+  .movie-card:hover .movie-title {
+    transform: translateZ(5px);
+    border:rgba(0, 180, 216, 0.6);
+  }
+  /* Previous styles remain unchanged */
+
+  .movie-card {
+      transform-style: preserve-3d;
+      transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      position: relative;
+      cursor: pointer;
+    }
+
+    .movie-card:hover {
+      transform: perspective(1000px) rotateY(15deg) translateZ(30px) scale(1.1);
+      z-index: 10;
+      border:rgba(0, 180, 216, 0.6);
+      border-radius: 10px;
+    }
+
+    .movie-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, var(--accent) 0%, transparent 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 1;
+    }
+
+    .movie-card:hover::before {
+      opacity: 0.3;
+    }
+
+    .movie-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 8px;
+      box-shadow: 0 0 30px rgba(0, 180, 216, 0);
+      transition: all 0.5s ease;
+    }
+
+    .movie-card:hover::after {
+      box-shadow: 0 0 40px rgba(0, 180, 216, 0.6);
+      
+    }
+
+    .movie-card img {
+      transition: transform 0.5s ease;
+      transform: translateZ(0);
+    }
+
+    .movie-card:hover img {
+      transform: translateZ(20px) scale(1.05);
+    }
+
+    .movie-title {
+      transition: all 0.5s ease;
+      transform: translateZ(0);
+    }
+
+    .movie-card:hover .movie-title {
+      transform: translateZ(30px);
+      color: var(--accent);
+      text-shadow: 0 0 10px rgba(0, 180, 216, 0.5);
+    }
+
+
+    
+
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <h1 class="logo">CINEVO Kids</h1>
+    
+  </nav>
+
+  <div class="container">
+    <div class="kids-header">
+      <h1>Welcome to CINEVO Kids!</h1>
+      <p>Safe and fun content for children of all ages</p>
+    </div>
+    <div id="movie-rows"></div>
+  </div>
+  
+  <script>
+    const kidsData = [
+      {
+        title: "Popular Cartoons",
+        movies: [
+          { title: "Paw Patrol", image: "https://bigcartoon.org/images/thumb/8/8d/91dnIHIQXfL._SL1500_.jpg/324px-91dnIHIQXfL._SL1500_.jpg" },
+          { title: "Peppa Pig", image: "https://m.media-amazon.com/images/M/MV5BYmZjZWQ0OTktODdlYy00ZjA1LWJlNzYtNmYwMDc4YzQzZmQwXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" },
+          { title: "Bluey", image: "https://www.shutterstock.com/image-illustration/bluey-family-portrait-theme-wallpaper-600nw-2422461161.jpg" },
+          { title: "Mickey Mouse", image: "https://m.media-amazon.com/images/I/71xIjnTrSaL._AC_UF894,1000_QL80_.jpg" },
+          { title: "SpongeBob", image: "https://m.media-amazon.com/images/M/MV5BYjJmMjBkZjMtZThiZS00Nzk3LWJlN2UtYmE5ZjkyNjJiZjgxXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" },
+          { title: "Dora the Explorer", image: "https://c4.wallpaperflare.com/wallpaper/61/533/288/dora-explorer-wallpaper-preview.jpg" },
+          { title: "PJ Masks", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBACsjdFrbfhWHdCX0LUtED9ap5Mb4h0BPhQ&s" },
+          { title: "Teen Titans Go!", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1AW_Eg9nrbqTYzhe-2twsFICRMo4zguDZSg&s" }
+        ]
+      },
+      {
+        title: "Animated Movies",
+        movies: [
+          { title: "Frozen", image: "https://lumiere-a.akamaihd.net/v1/images/p_frozen_18373_3131259c.jpeg?region=0%2C0%2C540%2C810" },
+          { title: "Toy Story", image: "https://images.moviesanywhere.com/92680b12463a89aaa1e8e989d7f941b7/24d8df48-e4b7-4989-b768-bdc54cb55bb5.jpg" },
+          { title: "Moana", image: "https://lumiere-a.akamaihd.net/v1/images/p_moana_20530_214883e3.jpeg?region=0%2C0%2C540%2C810" },
+          { title: "Coco", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0F_tBWKvQP9Fk5uHeeFlSSGUktGmzDZfxh7DT66kcJT65U3yXKTdBgeiQT-cktHfhtnw&usqp=CAU" },
+          { title: "The Lion King", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDEjDawYGs7QzV7p-tZE23aaqeBSuGNRiB4g&s" },
+          { title: "Finding Nemo", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgYJ_nDYW0ke4yZl-hbcGNtq5et7wFtJYzm_V0hxlYUb3QE_DVzxKQ_5h-ev9WRnmslME&usqp=CAU" },
+          { title: "Zootopia", image: "https://i.pinimg.com/736x/b7/b1/48/b7b1481a124a07babe533388d0521caa.jpg" },
+          { title: "Ask the StoryBots", image: "https://hips.hearstapps.com/hmg-prod/images/best-netflix-animation-princess-frog-1585599095.jpg" },
+          { title: "Ask the StoryBots", image: "https://i.pinimg.com/originals/c4/24/cc/c424cc76f26ce2eab18898b8a92917ec.jpg" }
+
+
+        ]
+      },
+      {
+        title: "Learning Shows",
+        movies: [
+          { title: "Sesame Street", image: "https://m.media-amazon.com/images/S/pv-target-images/8b50a0ed74c760cbd492e5bf794d17b69cf6399d8bd4e0f3a628a9a80ccab282.jpg" },
+          { title: "Daniel Tiger", image: "https://cms-tc.pbskids.org/global/mezzanines/shows/daniel-tigers-neighborhood.jpg" },
+          { title: "Wild Kratts", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYePYa07f4znogULCZKv2F-vGwA11NVYKrOA&s" },
+          { title: "Magic School Bus", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFA8FkdsOXN6oMA0ct0KXeg4n16u2kzx7n7g&s" },
+          { title: "Octonauts", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSsMa2mhyTfJ9tX7PxFFc9wu7dtazasS0bGw&s" },
+          { title: "Ask the StoryBots", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYju9dBW1nkN7-fFmeXTrUbxUmQN28mgahQA&s" },
+          { title: "Ask the StoryBots", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTsOz7oRa-QSKTsQ0m1YNMl-M3Rvlz1E1PA8g&s" },
+          { title: "Ask the StoryBots", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT57If08VJcPdVC5mgjgK5s9XtWI413XQbHWQ&s" }
+
+
+        ]
+      },
+      {
+        title: "Superhero Adventures",
+        movies: [
+          { title: "PJ Masks", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3AUsbW2psqoauodOJIak7CY1M4cjIfpEwyg&s" },
+          { title: "Superhero Girls", image: "https://m.media-amazon.com/images/M/MV5BNDI4ZTAxZGYtMTNhYi00N2Q1LWE5ZWYtMTc2NDQ3MzBmZjBmXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg" },
+          { title: "Spidey & Friends", image: "https://cdn.marvel.com/content/1x/spidey_lob_crd_01.jpg" },
+          { title: "Batman: TAS", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTitGfJ4scdUiSqCqnfDxOkknCSkX_ziyHCtg&s" },
+          { title: "Avengers Assemble", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTAm2OVvmser3B-Fvm2tFHzk4ER_aOLbE96BQ&s" },
+          { title: "Superman: TAS", image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5Eectx8tEPkdgkH5KXeug4qjbx5CtAJR54w&s" },
+          { title: "Ask the StoryBots", image: "https://img.freepik.com/free-photo/3d-rendering-cartoon-character-exploring-like-forest_23-2150991443.jpg" },
+          { title: "doremon", image: "https://d3lzcn6mbbadaf.cloudfront.net/media/details/ANI-20221012112037.jpg" }
+
+
+        ]
+      }
+    ];
+    const movieContainer = document.getElementById("movie-rows");
+
+kidsData.forEach(section => {
+  const row = document.createElement("div");
+  row.className = "row-container";
+  
+  row.innerHTML = `
+    <h2 class="row-title">${section.title}</h2>
+    <button class="scroll-btn left">&#10094;</button>
+    <div class="row-posters">
+      ${section.movies.map(movie => `
+        <div class="movie-card">
+          <img src="${movie.image}" alt="${movie.title}" loading="lazy"/>
+          <div class="movie-title">${movie.title}</div>
+        </div>
+      `).join("")}
+    </div>
+    <button class="scroll-btn right">&#10095;</button>
+  `;
+  
+  movieContainer.appendChild(row);
+});
+
+// Scroll behavior with improved touch support
+document.querySelectorAll(".row-container").forEach(row => {
+  const posters = row.querySelector(".row-posters");
+  let isScrolling = false;
+
+  // Button controls
+  row.querySelector(".scroll-btn.left").addEventListener("click", () => {
+    posters.scrollBy({ left: -posters.offsetWidth, behavior: 'smooth' });
+  });
+  
+  row.querySelector(".scroll-btn.right").addEventListener("click", () => {
+    posters.scrollBy({ left: posters.offsetWidth, behavior: 'smooth' });
+  });
+
+  // Touch handling
+  let touchStartX = 0;
+  
+  posters.addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].clientX;
+    isScrolling = true;
+  }, { passive: true });
+
+  posters.addEventListener('touchmove', e => {
+    if (!isScrolling) return;
+    e.preventDefault();
+    
+    const touchEndX = e.touches[0].clientX;
+    const difference = touchStartX - touchEndX;
+    posters.scrollLeft += difference * 2;
+    touchStartX = touchEndX;
+  }, { passive: false });
+
+  posters.addEventListener('touchend', () => {
+    isScrolling = false;
+  });
+});
+
+
+    
+  </script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CINEVO</title>
+  <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.82/build/spline-viewer.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      height: 100%;
+      background: black;
+      overflow: hidden;
+      font-family: 'Arial', sans-serif;
+    }
+
+    #spline-wrapper {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      transition: opacity 1s ease-out;
+    }
+
+    .title {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 64px;
+      color: #0ff;
+      text-shadow:
+        0 0 10px #0ff,
+        0 0 20px #0ff,
+        0 0 40px #0ff,
+        0 0 80px #0ff;
+      opacity: 0;
+      z-index: 2;
+      letter-spacing: 8px;
+      transition: opacity 1.5s ease;
+    }
+
+    .visible {
+      opacity: 1;
+    }
+
+    .hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="spline-wrapper">
+    <spline-viewer url="https://prod.spline.design/vgqfBHJVhTEzsRBJ/scene.splinecode"></spline-viewer>
+  </div>
+
+  <!-- <div class="title" id="cinevo-title">CINEVO</div> -->
+  
+  <div class="title" id="cinevo-title">
+    <a href="sign.html" style="text-decoration: none; color: inherit;">CINEVO</a>
+  </div>
+  
+  <script>
+    // Simulate "animation end" after 6 seconds
+    setTimeout(() => {
+      const splineWrapper = document.getElementById('spline-wrapper');
+      const title = document.getElementById('cinevo-title');
+
+      splineWrapper.classList.add('hidden');
+      title.classList.add('visible');
+    }, 6000); // Change this duration to match your Spline animation length
+  </script>
+
+</body>
+</html>
